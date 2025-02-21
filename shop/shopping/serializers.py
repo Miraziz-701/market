@@ -13,6 +13,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'phone_number', 'roles', 'password')
 
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only = True)
