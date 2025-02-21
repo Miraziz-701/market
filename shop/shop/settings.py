@@ -147,3 +147,4 @@ REST_FRAMEWORK = {
     'DATE_INPUT_FORMATS': ['%d-%m-%Y %H:%M:%S', '%d-%m-%Y %-H:%M:%S'],
     'DATETIME_FORMAT': '%d-%m-%Y %-H:%M:%S',
 }
+
