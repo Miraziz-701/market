@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from shopping.models import Address, User
-from shopping.serializers import AddressSerializer, LoginSerializer, RegisterSerializer
+from shopping.models import Address, User, Supplier
+from shopping.serializers import AddressSerializer, LoginSerializer, RegisterSerializer, SupplierSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import OpenApiResponse, extend_schema, OpenApiParameter
@@ -37,22 +37,16 @@ class AddressListCreateAPIView(APIView):
 
 class AddressDetailAPIView(APIView):
 
-    def get_object(self, pk):
-        try:
-            return Address.objects.get(pk=pk)
-        except Address.DoesNotExist:
-            return None
-
     def get(self, request, pk):
-        address = self.get_object(pk)
-        if address is None:
-            return Response({"error": "Address not found"}, status=status.HTTP_404_NOT_FOUND)
+        address = Address.objects.get(pk=pk)
+        if not address:
+            return Response({'error': 'Address not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = AddressSerializer(address)
         return Response(serializer.data)
 
 
     def delete(self, request, pk):
-        address = self.get_object(pk)
+        address = Address.objects.get(pk=pk)
         if address is None:
             return Response({"error": "Address not found"}, status=status.HTTP_404_NOT_FOUND)
         address.delete()
@@ -122,3 +116,41 @@ class RegisterAPIView(APIView):
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SuplierCreateAPIView(APIView):
+    def get(self, request):
+        suppliers = Supplier.objects.all()
+        serializer = SupplierSerializer(suppliers, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+            summary='Supplier',
+            description='Enter supplier',
+            request=SupplierSerializer
+    )
+
+    def post(self, request):
+        serializer = SupplierSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SuplierDetailAPIView(APIView):
+    def get(self, request, pk):
+        supplier = Supplier.objects.get(pk=pk)
+        if not supplier:
+            return Response({'error': 'Supplier not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = SupplierSerializer(supplier)
+        return Response(serializer.data)
+
+
+    def delete(self, request, pk):
+        supplier = Supplier.objects.get(pk=pk)
+        if supplier is None:
+            return Response({"error": "Supplier not found"}, status=status.HTTP_404_NOT_FOUND)
+        supplier.delete()
+        return Response({"message": "Supplier deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
