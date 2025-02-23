@@ -137,20 +137,21 @@ class SuplierCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SuplierDetailAPIView(APIView):
-    def get(self, request, pk):
-        supplier = Supplier.objects.get(pk=pk)
-        if not supplier:
+    def get(self, request, user_id, pk):
+        try:
+            supplier = Supplier.objects.get(user_id=user_id, pk=pk)
+        except Supplier.DoesNotExist:
             return Response({'error': 'Supplier not found'}, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = SupplierSerializer(supplier)
         return Response(serializer.data)
 
-
-    def delete(self, request, pk):
-        supplier = Supplier.objects.get(pk=pk)
-        if supplier is None:
+    def delete(self, request, user_id, pk):
+        try:
+            supplier = Supplier.objects.get(user_id=user_id, pk=pk)
+        except Supplier.DoesNotExist:
             return Response({"error": "Supplier not found"}, status=status.HTTP_404_NOT_FOUND)
+        
         supplier.delete()
         return Response({"message": "Supplier deleted"}, status=status.HTTP_204_NO_CONTENT)
-
-
 
