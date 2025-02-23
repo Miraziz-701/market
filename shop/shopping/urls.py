@@ -6,6 +6,6 @@ urlpatterns = [
     path('addresses/<int:pk>/', AddressDetailAPIView.as_view(), name='address-detail'),
     path('register/', RegisterAPIView.as_view(), name='register'),
     path('login/', LoginAPIView.as_view(), name='login'),
-    path('supplier/<int:user_id>/<int:pk>/', SuplierDetailAPIView.as_view(), name='supplier-detail'),
+    path('supplier/<int:pk>/', SuplierDetailAPIView.as_view(), name='supplier-detail'),
     path('supplier/', SuplierCreateAPIView.as_view(), name='supplier-create')
 ]

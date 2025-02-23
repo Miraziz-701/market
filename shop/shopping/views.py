@@ -7,6 +7,8 @@ from rest_framework import status
 from drf_spectacular.utils import OpenApiResponse, extend_schema, OpenApiParameter
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import IsAuthenticated
+
 
 
 
@@ -137,18 +139,19 @@ class SuplierCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SuplierDetailAPIView(APIView):
-    def get(self, request, user_id, pk):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, pk):
         try:
-            supplier = Supplier.objects.get(user_id=user_id, pk=pk)
+            supplier = Supplier.objects.get(user=request.user, pk=pk)
         except Supplier.DoesNotExist:
             return Response({'error': 'Supplier not found'}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = SupplierSerializer(supplier)
         return Response(serializer.data)
 
-    def delete(self, request, user_id, pk):
+    def delete(self, request, pk):
         try:
-            supplier = Supplier.objects.get(user_id=user_id, pk=pk)
+            supplier = Supplier.objects.get(user=request.user, pk=pk)
         except Supplier.DoesNotExist:
             return Response({"error": "Supplier not found"}, status=status.HTTP_404_NOT_FOUND)
         
